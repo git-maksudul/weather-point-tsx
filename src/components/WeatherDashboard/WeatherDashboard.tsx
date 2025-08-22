@@ -69,7 +69,7 @@ const WeatherDashboard: React.FC = () => {
         e.preventDefault()
 
         if (!city) {
-            setError('PLEASE ENTER VALID CITY NAME')
+            setError('PLEASE ENTER YOUR CITY NAME')
             setWeather(null)
             return;
         }
