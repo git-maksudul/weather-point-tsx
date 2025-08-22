@@ -38,13 +38,28 @@ const WeatherDashboard: React.FC = () => {
             const response = await axios.get(
                 `https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${value}`
             );
+
+            //This line added for typescript-eslint (Added by Maksud) 
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const citySuggestions = response.data.map((item: any) => `${item.name}, ${item.country}`)
             setSuggestions(citySuggestions);
         } catch (error) {
             console.log("Error fetching suggestions", error);
             setSuggestions([]);
         }
+    }
 
+    const fetchWeather = async (selectedCity: string) => {
+        try {
+            setError(null);
+            const response = await axios.get<weatherData>(
+                `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${selectedCity}&aqi=no`
+            )
+            setWeather(response.data)
+        } catch {
+            setError('CITY NOT FOUND !')
+            setWeather(null);
+        }
     }
 
 
@@ -52,21 +67,25 @@ const WeatherDashboard: React.FC = () => {
         e.preventDefault()
 
         if (!city) {
-            return ('City not found')
+            setError('City not found')
+            return;
         }
-        try {
-            setError(null);
+        // try {
+        //     setError(null);
 
-            const response = await axios.get<weatherData>(
-                `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`
-            );
-            setWeather(response.data)
-            setCity('');
-        }
-        catch {
-            setError('CITY NOT FOUND !');
-            setWeather(null);
-        }
+        //     const response = await axios.get<weatherData>(
+        //         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`
+        //     );
+        //     setWeather(response.data)
+        //     setCity('');
+        // }
+        // catch {
+        //     setError('CITY NOT FOUND !');
+        //     setWeather(null);
+        // }
+        await fetchWeather(city);
+        setSuggestions([]);
+        setCity('');
     };
 
     return (
@@ -79,7 +98,7 @@ const WeatherDashboard: React.FC = () => {
                         value={city}
                         onChange={handleInputChange}
                         placeholder="Enter your city name"
-                        className="flex-1 px-4 py-2 rounded border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+                        className="w-full text-xs md:text-base lg:text-base flex-1 px-4 py-2 rounded border border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
                     />
                     {
                         suggestions.length > 0 && (
@@ -88,9 +107,10 @@ const WeatherDashboard: React.FC = () => {
                                     suggestions.map((suggestion, index) => (
                                         <li
                                             key={index}
-                                            onClick={() => {
+                                            onClick={async () => {
                                                 setCity(suggestion)
                                                 setSuggestions([]);
+                                                await fetchWeather(suggestion);
                                             }}
                                             className="px-4 py-2 hover:bg-blue-100 cursor-pointer"
                                         >
