@@ -54,7 +54,10 @@ const WeatherDashboard: React.FC = () => {
             const response = await axios.get<weatherData>(
                 `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${selectedCity}&aqi=no`
             )
-            setWeather(response.data)
+            setWeather(response.data);
+
+            // Clearing input field after showing result
+            setCity('')
         } catch {
             setError('CITY NOT FOUND !')
             setWeather(null);
@@ -66,23 +69,10 @@ const WeatherDashboard: React.FC = () => {
         e.preventDefault()
 
         if (!city) {
-            setError('Please enter your city name')
+            setError('PLEASE ENTER VALID CITY NAME')
             setWeather(null)
             return;
         }
-        // try {
-        //     setError(null);
-
-        //     const response = await axios.get<weatherData>(
-        //         `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${city}&aqi=no`
-        //     );
-        //     setWeather(response.data)
-        //     setCity('');
-        // }
-        // catch {
-        //     setError('CITY NOT FOUND !');
-        //     setWeather(null);
-        // }
         await fetchWeather(city);
         setSuggestions([]);
         setCity('');
