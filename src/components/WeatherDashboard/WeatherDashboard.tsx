@@ -70,8 +70,8 @@ const WeatherDashboard: React.FC = () => {
                     <div className="lg:p-5 py-2 bg-amber-50 lg:w-2xl rounded-lg shadow-lg border border-amber-400 mx-auto">
                         <h3 className="text-xl font-semibold">{weather.location.name}</h3>
                         <p className="text-gray-500 font-medium">{weather.location.country}</p>
-                        <h2 className="font-bold text-4xl">{weather.current.temp_c}° C</h2>
-                        <p className="text-gray-500 text-sm">Feels like {weather.current.feelslike_c}° C</p>
+                        <h2 className="font-bold text-4xl">{weather.current.temp_c}°C</h2>
+                        <p className="text-gray-500 text-sm">Feels like {weather.current.feelslike_c}°C</p>
                         <p className="text-gray-500 text-sm">Humidity {weather.current.humidity}</p>
                         <img className="mx-auto" src={weather.current.condition.icon} alt="" />
                         <p className="font-semibold text-gray-600">{weather.current.condition.text}</p>
