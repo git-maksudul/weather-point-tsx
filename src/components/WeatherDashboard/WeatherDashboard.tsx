@@ -33,7 +33,6 @@ const WeatherDashboard: React.FC = () => {
             setSuggestions([])
             return;
         }
-
         try {
             const response = await axios.get(
                 `https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${value}`
@@ -67,7 +66,8 @@ const WeatherDashboard: React.FC = () => {
         e.preventDefault()
 
         if (!city) {
-            setError('City not found')
+            setError('Please enter your city name')
+            setWeather(null)
             return;
         }
         // try {
