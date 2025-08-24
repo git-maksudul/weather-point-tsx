@@ -22,8 +22,10 @@ const WeatherDashboard: React.FC = () => {
     const [error, setError] = useState<string | null>(null);
     const [city, setCity] = useState('');
     const [suggestions, setSuggestions] = useState<string[]>([]);
+    const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
     const apiKey = 'ea6cfc4148b447b0b6b15552252108';
+    const geoUserName = 'Maksud123';
 
     const handleInputChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -34,17 +36,32 @@ const WeatherDashboard: React.FC = () => {
             return;
         }
         try {
+            setLoadingSuggestions(true);
             const response = await axios.get(
-                `https://api.weatherapi.com/v1/search.json?key=${apiKey}&q=${value}`
+                "https://secure.geonames.org/searchJSON", {
+                params: {
+                    name_startsWith: value,
+                    maxRows: 100,
+                    featureClass: "P",
+                    username: geoUserName,
+                }
+            }
             );
-
+            const results = response.data.geonames;
             //This line added for typescript-eslint (Added by Maksud) 
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            const citySuggestions = response.data.map((item: any) => `${item.name}, ${item.country}`)
+            const citySuggestions = results.filter((item: any) => {
+                const name = item.name;
+                const isCodeLike = /^[A-Z]{3,4}$/.test(name);
+                return !isCodeLike;
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            }).map((item: any) => `${item.name}, ${item.countryName}`)
             setSuggestions(citySuggestions);
         } catch (error) {
             console.log("Error fetching suggestions", error);
             setSuggestions([]);
+        } finally {
+            setLoadingSuggestions(false);
         }
     }
 
@@ -92,7 +109,12 @@ const WeatherDashboard: React.FC = () => {
                     />
                     {
                         suggestions.length > 0 && (
-                            <ul className="absolute z-10 bg-white border border-gray-300 w-full mt-1 rounded shadow max-h-60 overflow-y-auto">
+                            <ul className="absolute z-10 bg-white border border-gray-300 w-full mt-1 rounded shadow max-h-80 overflow-y-auto">
+                                {
+                                    loadingSuggestions && (
+                                        <li className="px-4 py-2 text-sm text-gray-500">Loading...Please Wait !</li>
+                                    )
+                                }
                                 {
                                     suggestions.map((suggestion, index) => (
                                         <li
@@ -108,6 +130,7 @@ const WeatherDashboard: React.FC = () => {
                                         </li>
                                     ))
                                 }
+                                <li className="px-4 py-1 text-[11px] text-gray-400 text-center">Showing top {suggestions.length} results</li>
                             </ul>
                         )
                     }
